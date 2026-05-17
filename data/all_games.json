@@ -1,0 +1,35 @@
+[
+  {
+    "active_color": "red",
+    "board": [
+      {"word": "APPLE", "color": "red"},
+      {"word": "ORANGE", "color": "red"},
+      {"word": "DOG", "color": "blue"},
+      {"word": "CAT", "color": "blue"},
+      {"word": "PAPER", "color": "neutral"},
+      {"word": "POISON", "color": "assassin"}
+    ],
+    "clues": [
+      {
+        "word": "FRUIT",
+        "targets": ["APPLE", "ORANGE"]
+      }
+    ]
+  },
+  {
+    "active_color": "blue",
+    "board": [
+      {"word": "STRIKE", "color": "blue"},
+      {"word": "BASEBALL", "color": "blue"},
+      {"word": "APPLE", "color": "red"},
+      {"word": "BEAR", "color": "neutral"},
+      {"word": "FOREST", "color": "assassin"}
+    ],
+    "clues": [
+      {
+        "word": "BAT",
+        "targets": ["STRIKE", "BASEBALL"]
+      }
+    ]
+  }
+]

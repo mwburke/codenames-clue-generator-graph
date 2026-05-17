@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #020617; /* Slate 950 */
+    color: #f8fafc; /* Slate 50 */
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(339,49%,30%,0.1) 0, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .word-card {
+    @apply relative overflow-hidden rounded-xl p-4 flex items-center justify-center text-center font-bold text-lg tracking-wider transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg cursor-pointer;
+  }
+  
+  .card-team {
+    @apply bg-cyan-900/40 text-cyan-200 border border-cyan-500/30 hover:bg-cyan-800/60 shadow-[0_0_15px_rgba(6,182,212,0.15)];
+  }
+  
+  .card-opponent {
+    @apply bg-rose-900/40 text-rose-200 border border-rose-500/30 hover:bg-rose-800/60 shadow-[0_0_15px_rgba(225,29,72,0.15)];
+  }
+  
+  .card-neutral {
+    @apply bg-slate-800/40 text-slate-300 border border-slate-600/30 hover:bg-slate-700/60;
+  }
+  
+  .card-assassin {
+    @apply bg-black text-slate-400 border border-slate-800 hover:text-white hover:border-red-500 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)];
+  }
+
+  .card-targeted {
+    @apply ring-4 ring-yellow-400 ring-offset-2 ring-offset-slate-900 scale-105 z-10 animate-pulse;
+  }
+}

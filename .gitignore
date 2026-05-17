@@ -1,0 +1,41 @@
+# Virtual Environments
+venv/
+.venv/
+ENV/
+env/
+
+# Node.js
+node_modules/
+frontend/node_modules/
+dist/
+build/
+.eslintcache
+
+# Large Wikipedia SQL / Gzip / CSV Data Dumps
+data/*.sql.gz
+data/*.sql
+data/*.csv
+# Ignore large cached files but keep our critical mappings
+models.txt
+*.log
+
+# Neo4j Database files
+neo4j/
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
