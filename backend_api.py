@@ -5,7 +5,7 @@ import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from production_generators import Neo4jClueGenerator, LLMClueSanitizer
+from production_generators import Neo4jClueGenerator, LLMClueScorer, GeminiEmbeddingReranker, WikipediaWordMapper
 from hybrid_generator import HybridClueGenerator, SemanticClueGenerator
 from codenames_generator import CodenamesClueGenerator
 from salt_ingestion import SaltDataIngestor
@@ -38,10 +38,16 @@ def get_neo4j_generator(api_key: str):
         print("--- INITIALIZING NEO4J DRIVER (FIRST RUN) ---")
         _neo4j_gen_instance = Neo4jClueGenerator("bolt://localhost:7687", "neo4j", "password")
     
-    # Attach sanitizer if key is provided and not already attached
-    if api_key and _neo4j_gen_instance.sanitizer is None:
-        print("--- ATTACHING AI SANITIZER TO GRAPH ENGINE ---")
-        _neo4j_gen_instance.sanitizer = LLMClueSanitizer(api_key)
+    if api_key:
+        if _neo4j_gen_instance.word_mapper is None:
+            print("--- ATTACHING WIKIPEDIA WORD MAPPER ---")
+            _neo4j_gen_instance.word_mapper = WikipediaWordMapper(_neo4j_gen_instance.driver, api_key)
+        if _neo4j_gen_instance.reranker is None:
+            print("--- ATTACHING SEMANTIC RERANKER TO GRAPH ENGINE ---")
+            _neo4j_gen_instance.reranker = GeminiEmbeddingReranker(api_key)
+        if _neo4j_gen_instance.sanitizer is None:
+            print("--- ATTACHING LLM SCORER TO GRAPH ENGINE ---")
+            _neo4j_gen_instance.sanitizer = LLMClueScorer(api_key)
     return _neo4j_gen_instance
 
 generators = {
@@ -129,12 +135,12 @@ async def generate_clues(board: BoardState):
         if inspect.iscoroutinefunction(generator.generate_clues):
             clues = await generator.generate_clues(
                 my_team=team, opponent=board.opponent,
-                neutral=board.neutral, assassin=board.assassin, max_depth=1
+                neutral=board.neutral, assassin=board.assassin
             )
         else:
             clues = generator.generate_clues(
                 my_team=team, opponent=board.opponent,
-                neutral=board.neutral, assassin=board.assassin, max_depth=1
+                neutral=board.neutral, assassin=board.assassin
             )
         
         # Unified safety and normalization loop
