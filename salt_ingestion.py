@@ -46,12 +46,14 @@ class SaltDataIngestor:
                 continue
                 
             scenario = {
-                "team": targets,  # We treat targets as the primary team words
-                "opponent": [],   # The dataset groups all 'bad' words into 'black'
+                "team": targets,
+                # SALT does not separate opponent from assassin — 'black' is all
+                # words to avoid.  Expose it raw; callers decide how to use it.
+                "opponent": [],
                 "neutral": tan,
-                "assassin": black[0] if black else None,  # Treat first black word as assassin for evaluating safety
+                "assassin": None,
                 "human_clues": [{"word": human_clue_word, "targets": targets}],
-                "black": black
+                "black": black,
             }
             formatted_scenarios.append(scenario)
             
