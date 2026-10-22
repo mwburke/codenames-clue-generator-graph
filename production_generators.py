@@ -21,13 +21,19 @@ def _is_quota_error(exc: Exception) -> bool:
     return any(k in msg for k in ("429", "quota", "resource_exhausted", "exhausted"))
 
 
-async def _generate_with_fallback(client, contents, models=None, **kwargs) -> object:
-    """Try each model in order, skipping on quota errors. Raises if all exhausted."""
+async def _generate_with_fallback(client, contents, models=None, return_model=False, **kwargs) -> object:
+    """Try each model in order, skipping on quota errors. Raises if all exhausted.
+
+    With return_model=True, returns (response, model_id_that_answered) so callers
+    can attribute cost and quality to the model that actually served the request.
+    Pass models=[one_id] to pin a single model (no silent fallback).
+    """
     for model in (models or FLASH_FALLBACK_MODELS):
         try:
-            return await asyncio.to_thread(
+            response = await asyncio.to_thread(
                 client.models.generate_content, model=model, contents=contents, **kwargs
             )
+            return (response, model) if return_model else response
         except Exception as e:
             if _is_quota_error(e):
                 print(f"DEBUG: quota exceeded on {model}, trying next...", flush=True)
@@ -566,11 +572,11 @@ Candidates:
                 _generate_with_fallback(self.client, prompt),
                 timeout=20.0,
             )
-            match = re.search(r"\[.*?\]", response.text, re.DOTALL)
-            if not match:
+            from llm_json import LLMJSONError, parse_json_list
+            try:
+                ratings = parse_json_list(response.text)
+            except LLMJSONError:
                 return clues
-
-            ratings = json.loads(match.group(0))
             rating_map = {r["idx"]: r["score"] for r in ratings if "idx" in r and "score" in r}
 
             for i, c in enumerate(candidates):
